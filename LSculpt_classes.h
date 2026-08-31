@@ -1,4 +1,4 @@
-/*	LSculpt: Studs-out LEGO® Sculpture
+/*	LSculpt: Studs-out LEGOï¿½ Sculpture
 
 	Copyright (C) 2010 Bram Lambrecht <bram@bldesign.org>
 
@@ -32,6 +32,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 #include <ctime>
 #include <cmath>
 #include <QFileInfo>
@@ -39,7 +40,30 @@
 #include "smVector.h"	// 2D and 3D vector library
 #include "rply.h"		// PLY input library
 
-using namespace std;
+// Not `using namespace std;`: on Windows this pulls std::byte into
+// unqualified lookup, which is ambiguous against the Windows SDK's own
+// global `byte` typedef (rpcndr.h, pulled in transitively via
+// QFileInfo/QString above) -- confirmed by actually cross-building for
+// Windows (MinGW), where the blanket form broke objidl.h/oaidl.h with
+// "reference to 'byte' is ambiguous". Only import what's actually used
+// (here and via files that include this header without their own
+// qualification).
+using std::vector;
+using std::map;
+using std::multiset;
+using std::set;
+using std::min;
+using std::max;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::ifstream;
+using std::ofstream;
+using std::string;
+using std::ios;
+using std::fixed;
+using std::setprecision;
+using std::set_terminate;
 
 #define PI 3.1415926535897932384626433832795
 

@@ -1,4 +1,4 @@
-/*	LSculpt: Studs-out LEGO® Sculpture
+/*	LSculpt: Studs-out LEGOï¿½ Sculpture
 
 	Copyright (C) 2010 Bram Lambrecht <bram@bldesign.org>
 
@@ -27,9 +27,7 @@
 #ifndef LSCULPT_FUNCTIONS_H
 #define LSCULPT_FUNCTIONS_H
 
-#include "LSculpt_classes.h"  // Class definitions and declarations
-
-using namespace std;
+#include "LSculpt_classes.h"  // Class definitions and declarations, and targeted `using std::...` imports
 
 //
 // ===== Function Declarations =====

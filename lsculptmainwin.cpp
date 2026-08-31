@@ -43,7 +43,16 @@
 #include "aboutdialog.h"
 #include "ldrawpreviewwidget.h"
 
-using namespace std;
+// Not `using namespace std;`: on Windows, that pulls std::byte into
+// unqualified lookup, which is ambiguous against the Windows SDK's own
+// global `byte` typedef (rpcndr.h, pulled in transitively via Qt) --
+// confirmed by actually cross-building for Windows (MinGW), where this
+// broke objidl.h/oaidl.h with "reference to 'byte' is ambiguous". Only
+// import the specific names this file actually uses.
+using std::cout;
+using std::cerr;
+using std::streambuf;
+using std::stringbuf;
 
 #define lsculpt_version "0.5.0"
 
