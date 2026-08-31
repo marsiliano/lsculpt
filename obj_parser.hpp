@@ -19,8 +19,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see http://www.gnu.org/licenses/  */
 
-#ifndef OBJ_OBJ_PARSER_HPP_INCLUDED
-#define OBJ_OBJ_PARSER_HPP_INCLUDED
+#pragma once
 
 #include <fstream>
 #include <istream>
@@ -221,5 +220,3 @@ inline void obj::obj_parser::comment_callback(const comment_callback_type& comme
 {
   comment_callback_ = comment_callback;
 }
-
-#endif // OBJ_OBJ_PARSER_HPP_INCLUDED

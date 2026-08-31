@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/images">
-        <file>ls_icon_120.png</file>
+        <file>lsculpt-icon.png</file>
     </qresource>
 </RCC>

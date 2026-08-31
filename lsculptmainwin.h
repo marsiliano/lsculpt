@@ -19,8 +19,7 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see http://www.gnu.org/licenses/  */
 
-#ifndef LSCULPTMAINWIN_H
-#define LSCULPTMAINWIN_H
+#pragma once
 
 #include <QMainWindow>
 #include <QSettings>
@@ -29,45 +28,44 @@
 #include "ldrawpreviewwidget.h"
 
 namespace Ui {
-    class LSculptMainWin;
+class LSculptMainWin;
 }
 
-class LSculptMainWin : public QMainWindow {
+class LSculptMainWin : public QMainWindow
+{
     Q_OBJECT
 public:
     LSculptMainWin(QWidget *parent = 0);
     ~LSculptMainWin();
-	void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 protected:
     void changeEvent(QEvent *e);
-	void resizeEvent(QResizeEvent *e);
+    void resizeEvent(QResizeEvent *e);
 
 private slots:
-	int invokeLSculpt();
+    int invokeLSculpt();
     int hidePreview();
-	void import3DMesh();
-	bool exportToLDraw();
-	void showHelpFile();
-	void showAboutDialog();
+    void import3DMesh();
+    bool exportToLDraw();
+    void showHelpFile();
+    void showAboutDialog();
 
 private:
     Ui::LSculptMainWin *ui;
     ArgPanel *panel;
-    ArgumentSet defaults;  // Local copy of default arguments, which we can munge through INI file
-	LDrawPreviewWidget *ldvWin;
+    ArgumentSet defaults; // Local copy of default arguments, which we can munge through INI file
+    LDrawPreviewWidget *ldvWin;
 
     bool isLoaded;
     bool hideLDView;
-	QString appPath;
-	QString LDVPath;
-	QSettings *settings;
+    QString appPath;
+    QString LDVPath;
+    QSettings *settings;
 
     bool offerSave();
-	void initProgressDialog();
+    void initProgressDialog();
     QString currentFilename;
-	void loadSettings();
-	void saveSettings();
+    void loadSettings();
+    void saveSettings();
 };
-
-#endif // LSCULPTMAINWIN_H

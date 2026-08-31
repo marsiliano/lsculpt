@@ -9,9 +9,7 @@
 	view-control surface LSculpt actually uses (LDVInit/LDVSetFilename/
 	LDVLoadModel/LDVSetSize/LDVSetSeamWidth/LDVSetTextureStuds/
 	LDVSetLDrawDir from the old LDVLib.h). */
-
-#ifndef LDRAWPREVIEWWIDGET_H
-#define LDRAWPREVIEWWIDGET_H
+#pragma once
 
 #include <QOpenGLWidget>
 #include <QString>
@@ -23,58 +21,56 @@ class LDPreviewAlertHandler;
 
 class LDrawPreviewWidget : public QOpenGLWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit LDrawPreviewWidget(QWidget *parent = nullptr);
-	~LDrawPreviewWidget() override;
+    explicit LDrawPreviewWidget(QWidget *parent = nullptr);
+    ~LDrawPreviewWidget() override;
 
-	// Replacement for LDVSetLDrawDir(const char *path)
-	static void setLDrawDir(const QString &path);
+    // Replacement for LDVSetLDrawDir(const char *path)
+    static void setLDrawDir(const QString &path);
 
-	// Replacement for LDVSetFilename(pLDV, filename) + LDVLoadModel(pLDV, resetViewpoint)
-	void setFilename(const QString &filename);
-	bool loadModel(bool resetViewpoint = true);
+    // Replacement for LDVSetFilename(pLDV, filename) + LDVLoadModel(pLDV, resetViewpoint)
+    void setFilename(const QString &filename);
+    bool loadModel(bool resetViewpoint = true);
 
-	// Replacement for the corresponding LDVSet*/LDVGet* rendering-option pairs
-	void setSeamWidth(float value);
-	void setTextureStuds(bool value);
+    // Replacement for the corresponding LDVSet*/LDVGet* rendering-option pairs
+    void setSeamWidth(float value);
+    void setTextureStuds(bool value);
 
-	// Replacement for LDVResetView / LDVZoomToFit
-	void resetView();
-	void zoomToFit();
+    // Replacement for LDVResetView / LDVZoomToFit
+    void resetView();
+    void zoomToFit();
 
-	// Replacement for LDVEnableInput / LDVIsInputEnabled
-	void setInputEnabled(bool enable) { inputEnabled = enable; }
-	bool isInputEnabled() const { return inputEnabled; }
+    // Replacement for LDVEnableInput / LDVIsInputEnabled
+    void setInputEnabled(bool enable) { inputEnabled = enable; }
+    bool isInputEnabled() const { return inputEnabled; }
 
-	LDrawModelViewer *getModelViewer() { return modelViewer; }
+    LDrawModelViewer *getModelViewer() { return modelViewer; }
 
 protected:
-	// QOpenGLWidget overrides -- LDVLib did this by hand-pumping WM_PAINT/
-	// wglMakeCurrent; Qt owns the GL context lifecycle here instead.
-	void initializeGL() override;
-	void resizeGL(int width, int height) override;
-	void paintGL() override;
+    // QOpenGLWidget overrides -- LDVLib did this by hand-pumping WM_PAINT/
+    // wglMakeCurrent; Qt owns the GL context lifecycle here instead.
+    void initializeGL() override;
+    void resizeGL(int width, int height) override;
+    void paintGL() override;
 
-	// Route Qt input events into LDInputHandler, replacing LDVLib.cpp's
-	// doButtonDown/doButtonUp/doMouseMove/doMouseWheel WM_* handlers.
-	void mousePressEvent(QMouseEvent *event) override;
-	void mouseReleaseEvent(QMouseEvent *event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
-	void wheelEvent(QWheelEvent *event) override;
-	void keyPressEvent(QKeyEvent *event) override;
-	void keyReleaseEvent(QKeyEvent *event) override;
+    // Route Qt input events into LDInputHandler, replacing LDVLib.cpp's
+    // doButtonDown/doButtonUp/doMouseMove/doMouseWheel WM_* handlers.
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 private:
-	static TCULong convertKeyModifiers(Qt::KeyboardModifiers osModifiers);
-	static LDInputHandler::MouseButton convertMouseButton(Qt::MouseButton button);
-	static LDInputHandler::KeyCode convertKeyCode(int qtKey);
+    static TCULong convertKeyModifiers(Qt::KeyboardModifiers osModifiers);
+    static LDInputHandler::MouseButton convertMouseButton(Qt::MouseButton button);
+    static LDInputHandler::KeyCode convertKeyCode(int qtKey);
 
-	LDrawModelViewer *modelViewer;
-	LDInputHandler *inputHandler;
-	LDPreviewAlertHandler *alertHandler;
-	QString filenameValue;
-	bool inputEnabled;
+    LDrawModelViewer *modelViewer;
+    LDInputHandler *inputHandler;
+    LDPreviewAlertHandler *alertHandler;
+    QString filenameValue;
+    bool inputEnabled;
 };
-
-#endif // LDRAWPREVIEWWIDGET_H
