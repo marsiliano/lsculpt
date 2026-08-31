@@ -13,19 +13,28 @@ set(LDVIEW_DIR ${CMAKE_SOURCE_DIR}/ldview)
 # Mirrors LSculpt.pro's `CONFIG += console` mode: mesh/sculpt logic only.
 # Useful as a preview-free fallback and as the first cross-platform smoke
 # test, independent of the Qt GUI / LDView viewer work below.
+#
+# Only defined -- and only claims the "LSculpt" output name -- when
+# LSCULPT_CONSOLE is actually requested. Previously this target was added
+# unconditionally with OUTPUT_NAME "LSculpt", the same name the full GUI
+# executable below also claims; both landed in the same output directory,
+# so an ordinary default build (LSCULPT_CONSOLE=OFF) silently let whichever
+# target linked last overwrite the other's binary on disk -- confirmed by
+# building and finding the console CLI's argv-parsing main() sitting where
+# the Qt GUI app was expected.
 find_package(QT NAMES Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 
-add_executable(LSculptConsole
-	LSculpt.cpp
-	rply.c
-	obj_parser.cpp
-)
-target_compile_definitions(LSculptConsole PRIVATE LSCULPT_CONSOLE)
-target_link_libraries(LSculptConsole Qt${QT_VERSION_MAJOR}::Core)
-set_target_properties(LSculptConsole PROPERTIES OUTPUT_NAME "LSculpt")
-
 if(LSCULPT_CONSOLE)
+	add_executable(LSculptConsole
+		LSculpt.cpp
+		rply.c
+		obj_parser.cpp
+	)
+	target_compile_definitions(LSculptConsole PRIVATE LSCULPT_CONSOLE)
+	target_link_libraries(LSculptConsole Qt${QT_VERSION_MAJOR}::Core)
+	set_target_properties(LSculptConsole PROPERTIES OUTPUT_NAME "LSculpt")
+
 	return()
 endif()
 
@@ -213,8 +222,25 @@ set(LDVIEW_COMMON_DEFS "-D_NO_BOOST -DHAVE_MINIZIP -DUSE_CPP11 ${LDVIEW_EXTRA_QT
 # linker then fails to read ("archive member '/' not a mach-o file").
 # Elsewhere, plain `ar rcs` is correct, so only force it cross-platform
 # outside Apple.
+# CMAKE_OSX_ARCHITECTURES (single-arch cross builds like arm64->x86_64
+# Rosetta targeting, or "arm64;x86_64" universal builds) is honored
+# automatically for the LSculpt/Qt targets CMake itself compiles and links,
+# but these engine libs are built by shelling out to plain `make`, which
+# knows nothing about it and would otherwise let clang pick its native/host
+# arch -- producing static archives whose arch doesn't match the app being
+# linked ("building for X, but linking in object file built for Y"). Fold
+# the requested -arch flags directly into CC/CXX so every sub-make compile
+# (and, since AR isn't overridden on Apple -- see below -- the libtool
+# archive step, which reads them straight off the object files) matches.
+set(LDVIEW_ARCH_FLAGS "")
+if(APPLE AND CMAKE_OSX_ARCHITECTURES)
+	foreach(_arch ${CMAKE_OSX_ARCHITECTURES})
+		string(APPEND LDVIEW_ARCH_FLAGS " -arch ${_arch}")
+	endforeach()
+endif()
+
 if(APPLE)
-	set(LDVIEW_MAKE_TOOLCHAIN CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER})
+	set(LDVIEW_MAKE_TOOLCHAIN "CC=${CMAKE_C_COMPILER}${LDVIEW_ARCH_FLAGS}" "CXX=${CMAKE_CXX_COMPILER}${LDVIEW_ARCH_FLAGS}")
 else()
 	set(LDVIEW_MAKE_TOOLCHAIN CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} "AR=${CMAKE_AR} rcs")
 endif()
@@ -374,3 +400,18 @@ if(WIN32)
 endif()
 
 add_dependencies(LSculpt TRE TCFoundation LDExporter LDLoader LDLib lib3ds)
+
+# LSculptMainWin's constructor (lsculptmainwin.cpp) looks for an "LDVLib/"
+# folder next to the built executable (QApplication::applicationDirPath()) --
+# empty.ldr plus the PARTS/P LDraw parts library the preview and voxelizer
+# both need -- and calls exit(1) with a "cannot find the LDraw parts"
+# message box if it's missing. The data lives in the repo at release/LDVLib
+# (checked in for the old Windows/qmake build, which built straight into
+# that directory), but nothing put a copy next to the CMake build's own
+# output executable. Copy it there after each build so a fresh CMake build
+# is runnable without manually reproducing the qmake layout.
+add_custom_command(TARGET LSculpt POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_SOURCE_DIR}/release/LDVLib
+		$<TARGET_FILE_DIR:LSculpt>/LDVLib
+)

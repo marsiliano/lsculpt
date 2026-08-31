@@ -1,4 +1,4 @@
-/*	LSculpt: Studs-out LEGO® Sculpture
+/*	LSculpt: Studs-out LEGOÂ® Sculpture
 
 	Copyright (C) 2010 Bram Lambrecht <bram@bldesign.org>
 
