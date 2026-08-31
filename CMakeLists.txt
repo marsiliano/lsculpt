@@ -167,6 +167,58 @@ ExternalProject_Add(lib3ds
 )
 
 # --- LSculpt GUI target --------------------------------------------------
-# Full GUI wiring (lsculptmainwin/argpanel/aboutdialog + the new
-# Qt-native LDraw viewer widget that replaces LDVLib) lands in a later
-# step; this target intentionally does not exist yet.
+# Replaces the old Windows-only LDVLib.dll preview with ldrawpreviewwidget
+# (a QOpenGLWidget embedding LDrawModelViewer directly -- see
+# ldrawpreviewwidget.h for the LDVLib-call -> direct-call mapping).
+#
+# ldview/QT/misc.cpp supplies ucstringtoqstring()/wcstoqstring(), which
+# TCFoundation/TCUserDefaults.cpp calls but does not define or link itself
+# -- ldview/QT/CMakeLists.txt only gets away with omitting it from the
+# library build because it globs misc.cpp into the *app* target alongside
+# TCFoundation. Since LSculpt doesn't build the LDView app, pull in just
+# this one small, self-contained (no LDView-app dependencies) file.
+add_executable(LSculpt
+	LSculpt.cpp
+	rply.c
+	obj_parser.cpp
+	main.cpp
+	lsculptmainwin.cpp
+	argpanel.cpp
+	aboutdialog.cpp
+	ldrawpreviewwidget.cpp
+	${LDVIEW_DIR}/QT/misc.cpp
+	lsculptmainwin.ui
+	argpanel.ui
+	aboutdialog.ui
+	advanced_widgets.ui
+	LSculpt.qrc
+)
+
+target_include_directories(LSculpt PRIVATE ${LDVIEW_DIR} ${LDVIEW_DIR}/QT)
+
+target_link_libraries(LSculpt
+	Qt${QT_VERSION_MAJOR}::Widgets
+	Qt${QT_VERSION_MAJOR}::Core
+	Qt${QT_VERSION_MAJOR}::OpenGL
+	Qt${QT_VERSION_MAJOR}::OpenGLWidgets
+	${OPENGL_LIBRARIES}
+	${CMAKE_THREAD_LIBS_INIT}
+	${PNG_LIBRARIES}
+	${JPEG_LIBRARIES}
+)
+
+target_link_libraries(LSculpt
+	-L${LDVIEW_DIR}/LDLib -lLDraw${LDVIEW_LIB_POSTFIX}
+	-L${LDVIEW_DIR}/TRE -lTRE${LDVIEW_LIB_POSTFIX}
+	-L${LDVIEW_DIR}/LDLoader -lLDLoader${LDVIEW_LIB_POSTFIX}
+	-L${LDVIEW_DIR}/LDExporter -lLDExporter${LDVIEW_LIB_POSTFIX}
+	-L${LDVIEW_DIR}/TCFoundation -lTCFoundation${LDVIEW_LIB_POSTFIX}
+	${GL2PS_LIBRARIES} ${TINYXML2_LIBRARIES} ${MINIZIP_LIBRARIES}
+	-L${LDVIEW_DIR}/3rdParty/lib3ds -l3ds
+)
+
+if(UNIX AND NOT APPLE)
+	target_link_libraries(LSculpt ${X11_X11_LIB})
+endif()
+
+add_dependencies(LSculpt TRE TCFoundation LDExporter LDLoader LDLib lib3ds)

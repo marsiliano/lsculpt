@@ -12,7 +12,7 @@ class AboutDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AboutDialog(char *version, QWidget *parent = 0);
+    explicit AboutDialog(const char *version, QWidget *parent = 0);
     ~AboutDialog();
 
 private:

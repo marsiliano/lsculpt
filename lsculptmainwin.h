@@ -1,4 +1,4 @@
-/*	LSculpt: Studs-out LEGO® Sculpture
+/*	LSculpt: Studs-out LEGOï¿½ Sculpture
 
 	Copyright (C) 2010 Bram Lambrecht <bram@bldesign.org>
 
@@ -26,6 +26,7 @@
 #include <QSettings>
 
 #include "argpanel.h"
+#include "ldrawpreviewwidget.h"
 
 namespace Ui {
     class LSculptMainWin;
@@ -54,9 +55,8 @@ private:
     Ui::LSculptMainWin *ui;
     ArgPanel *panel;
     ArgumentSet defaults;  // Local copy of default arguments, which we can munge through INI file
-	QWidget *ldvWin;
+	LDrawPreviewWidget *ldvWin;
 
-    void *pLDV;
     bool isLoaded;
     bool hideLDView;
 	QString appPath;
