@@ -3,12 +3,14 @@ LSculpt: Studs-out LEGO® Sculpture
 
 LSculpt converts a triangle mesh into an LDraw file. The generated model consists of a surface of 1×1 plates, each oriented in whichever direction provides the best detail for that part of the surface.
 
-![bunnies_624](http://lego.bldesign.org/LSculpt/bunnies_624.jpg)
+![xyzrgb_dragon converted three ways: color by layers, single color, color by orientation](docs/screenshots/dragons.png)
+
+*The `xyzrgb_dragon.ply` mesh converted to 1×1 plates (64 studs) with the three Part Color modes: Color by Layers, All the same Color, Color by Orientation.*
 
 Building
 --------
 
-LSculpt builds with CMake and Qt6 on Windows, macOS, and Linux. The Qt-native LDraw preview is powered by a vendored copy of Travis Cobbs' [LDView](http://ldview.sourceforge.net/), checked out as a git submodule.
+LSculpt builds with CMake and Qt6 on Windows, macOS, and Linux. The Qt-native LDraw preview is powered by a vendored copy of Travis Cobbs' [LDView](http://ldview.sourceforge.net/), checked out as a git submodule from [marsiliano/ldview](https://github.com/marsiliano/ldview) (currently pinned to `84d7708`, the latest `origin/master` as of 2026-08-31).
 
 ```sh
 git clone --recurse-submodules https://github.com/marsiliano/lsculpt.git
@@ -26,9 +28,19 @@ Pass `-DLSCULPT_CONSOLE=ON` to build only the command-line mesh/sculpt core, wit
 Screenshots
 -----------
 
-![ls_screen_mesh](http://lego.bldesign.org/LSculpt/ls_screen_mesh.png)
+The Stanford-style `xyzrgb_dragon.ply` mesh converted to 1×1 plates (output size 64 studs), previewed live with the embedded LDView engine. The *Part Color* option changes how the sculpture is colored.
 
-![ls_screen_lego](http://lego.bldesign.org/LSculpt/ls_screen_lego.png)
+**Color by Layers**
+
+![Color by layers](docs/screenshots/01-color-by-layers.png)
+
+**All the same Color**
+
+![Same color](docs/screenshots/02-same-color.png)
+
+**Color by Orientation**
+
+![Color by orientation](docs/screenshots/03-color-by-orientation.png)
 
 Working with 3D models
 -----------------------
